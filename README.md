@@ -39,5 +39,5 @@
 * Although I'd created a React-based UI for consuming the Api, considering that this requirement was a "Nice to have", I decided not to spend too much time to make it look sleek - it's just a very quick & simple `tsx` component with the bare-minimum elements necessary to be able to call the Api.
 
 
-## depenency diagram
+## dependency diagram
 <img width=1200px src="images/project-type-dependency.jpg">
