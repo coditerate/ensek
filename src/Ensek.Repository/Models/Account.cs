@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Ensek.Repository.Models;
+﻿namespace Ensek.Repository.Models;
 
 public partial class Account
 {

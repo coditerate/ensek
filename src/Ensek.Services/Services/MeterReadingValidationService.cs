@@ -1,49 +1,15 @@
 ﻿using CsvHelper;
-using CsvHelper.Configuration;
 using Ensek.Repository.Models;
+using Ensek.Services.Helpers;
 using Ensek.Services.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using Ensek.Services.Mappers;
 
-namespace Ensek.Services;
+namespace Ensek.Services.Services;
 
-public class MeterReadingService(EnsekContext dbContext) : IMeterReadingService
+public class MeterReadingValidationService(EnsekContext dbContext) : IMeterReadingValidationService
 {
-    public async Task<(bool Success, string? ErrorMessage, UploadResult? Result)> PostAsync(IFormFile? file, CancellationToken cancellationToken)
-    {
-        try
-        {
-            // Validate The File Uploaded
-            var fileValidation = await ValidateFile(file);
-            if (!fileValidation.Success) return (fileValidation.Success, fileValidation.ErrorMessage, null);
-
-            // Read And Validate File Data
-            var (totalRecords, validRecords, invalidRecords) = await ValidateFileData(file);
-
-            // Store File Data In Database
-            if (validRecords.Any())
-            {
-                dbContext.AddRange(validRecords.Select(record => record.MapToMeterReading()));
-                await dbContext.SaveChangesAsync(cancellationToken);
-            }
-
-            return (true, null, new UploadResult
-            {
-                TotalRecords = totalRecords,
-                SuccessfulRecords = validRecords.Count,
-                FailedRecords = invalidRecords.Count
-            });
-        }
-        catch (Exception ex)
-        {
-            // Log ex and ex.Message somewhere
-            return (false, "Something went wrong.", null);
-        }
-    }
-    
-    private async Task<(int TotalRecords, List<MeterReadingDTO> ValidRecords, List<string> InvalidRecords)> ValidateFileData(IFormFile? file)
+    public async Task<(int TotalRecords, List<MeterReadingDTO> ValidRecords, List<string> InvalidRecords)> ValidateFileData(IFormFile? file)
     {
         var totalRecords = 0;
         var invalidRecords = new List<string>();
@@ -67,19 +33,8 @@ public class MeterReadingService(EnsekContext dbContext) : IMeterReadingService
 
         // Read CSV Records One At A Time
 
-        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-        {
-            IgnoreBlankLines = true,
-            MissingFieldFound = null,       // Prevent exception on missing fields
-            BadDataFound = null,            // Prevent exception on bad data
-            HeaderValidated = null,         // Ignore header validation errors
-            TrimOptions = TrimOptions.Trim, // Remove whitespace
-            HasHeaderRecord = true
-        };
-
-        using var streamReader = new StreamReader(file!.OpenReadStream());
+        var (streamReader, config) = file.GetStreamReader();
         using var csv = new CsvReader(streamReader, config);
-
         await foreach (var record in csv.GetRecordsAsync<MeterReadingDTO>())
         {
             totalRecords++;
@@ -93,7 +48,7 @@ public class MeterReadingService(EnsekContext dbContext) : IMeterReadingService
             }
 
             // Validate MeterReadingValue Between 0 And 99999
-            if (record.MeterReadValue < 0 || record.MeterReadValue > 99999)
+            if (record.MeterReadValue is < 0 or > 99999)
             {
                 invalidRecords.Add($"Invalid MeterReadValue for AccountId {record.AccountId}: Must be 00000–99999.");
                 continue;
@@ -107,7 +62,7 @@ public class MeterReadingService(EnsekContext dbContext) : IMeterReadingService
             }
 
             // Validate For Duplicate Value In The DB
-            if (existingKeys.Contains(new { record.AccountId, record.MeterReadingDateTime}))
+            if (existingKeys.Contains(new { record.AccountId, record.MeterReadingDateTime }))
             {
                 invalidRecords.Add($"Duplicate in DB for AccountId {record.AccountId} at {record.MeterReadingDateTime}");
                 continue;
@@ -128,8 +83,7 @@ public class MeterReadingService(EnsekContext dbContext) : IMeterReadingService
         return (totalRecords, validRecords, invalidRecords);
     }
 
-
-    private async Task<(bool Success, string? ErrorMessage)> ValidateFile(IFormFile? file)
+    public async Task<(bool Success, string? ErrorMessage)> ValidateFile(IFormFile? file)
     {
         if (file == null || file.Length == 0) return (false, "No file uploaded.");
         if (Path.GetExtension(file.FileName) != ".csv") return (false, "Only .csv files are allowed.");

@@ -1,5 +1,5 @@
-using Ensek.Services;
 using Ensek.Services.Models;
+using Ensek.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ensek.Api.Controllers;

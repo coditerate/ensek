@@ -1,9 +1,4 @@
-﻿using System;
-using System.Configuration;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Protocols;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Ensek.Repository.Models;
 

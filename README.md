@@ -1,6 +1,8 @@
 # ensek
 
-## prepare a new database
+## running the application end-to-end
+
+### prepare a new database
 * In the `~/db-scripts` folder, there's an ordered list of 3 `sql` scripts.
 * Open up `MS SQL Server Management Studio`, and run the scripts <b>in the order below</b>.
 * `01_create_db_ensek.sql` - creates the database.
@@ -8,7 +10,7 @@
 * `03_insert_table_data_accounts.sql` - inserts data provided in the `test-accounts.csv` file, into the `Account` table.
 
 
-## running webapi project
+### run webapi project
 * Open up Visual Studio, and set the `Ensek.Api` project as the startup project.
 * Open `~/src/Ensek.Api/appsettings.json` file, and provide a valid database connection string for the `EnsekDatabase` field.
 * The connection string generally uses the below format, but might vary depending on the authentication mechanism used to connect to the database.
@@ -23,7 +25,7 @@
 <img width=400px src="images/postman-call.jpg">
 
 
-## running ui
+### run ui
 * Go to `~/ui/src/api/meter-reading-api.tsx` and change the value of the `API_BASE_URL` variable to be the Api URL from above.
 * Go to `~/ui/` folder and run `npm install` command, followed by `npm run dev`.
 * Vite will then indicate which localhost port the UI will be available on, which you can then use to load the UI in a browser.

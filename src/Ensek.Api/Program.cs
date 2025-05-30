@@ -1,8 +1,7 @@
 using Ensek.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
-using Ensek.Repository;
-using Ensek.Services;
+using Ensek.Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("EnsekDatabase") ?? throw new InvalidOperationException("Connection string to 'Ensek' database" + " not found.");
 builder.Services.AddDbContext<EnsekContext>(options => options.UseSqlServer(connectionString));
-
+builder.Services.AddScoped<IMeterReadingValidationService, MeterReadingValidationService>();
 builder.Services.AddScoped<IMeterReadingService, MeterReadingService>();
 
 

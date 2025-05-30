@@ -1,8 +1,7 @@
 ﻿using Ensek.Services.Models;
 using Microsoft.AspNetCore.Http;
-using System.Net;
 
-namespace Ensek.Services;
+namespace Ensek.Services.Services;
 
 public interface IMeterReadingService
 {
