@@ -37,3 +37,7 @@
 * Regarding the requirement of not having the same entry twice, I assumed it to mean to not have 2 entries with the same `AccountId` and `MeterReadingDateTime` value combination, regardless of the `MeterReadValue` itself.
 * I assumed that the requirement of the `MeterReadingValue` format to be `NNNNN`, simply meant that it should be a whole integer i.e, `0 - 99999` range, and not `00001 - 99999`.
 * Although I'd created a React-based UI for consuming the Api, considering that this requirement was a "Nice to have", I decided not to spend too much time to make it look sleek - it's just a very quick & simple `tsx` component with the bare-minimum elements necessary to be able to call the Api.
+
+
+## depenency diagram
+<img width=1200px src="images/project-type-dependency.jpg">
